@@ -16,7 +16,6 @@ public class HystrixConnektClient implements ConnektClient {
         this.sendEmailCommand = sendEmailCommand;
     }
 
-    @Override
     public void sendEmail(ConnektPayload connektPayload) {
         sendEmailCommand.withConnektPayload(connektPayload).queue();
     }

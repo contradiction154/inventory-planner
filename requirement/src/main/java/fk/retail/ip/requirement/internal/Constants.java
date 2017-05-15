@@ -60,5 +60,7 @@ public interface Constants {
 
     String DEFAULT_APP_OVERRIDE_COMMENT = "App overridden corresponding to supplier";
 
+    String FROM_EMAIL_ADDRESS = "ip-oncall@flipkart.com";
+
 }
 

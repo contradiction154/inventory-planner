@@ -4,7 +4,8 @@ import fk.retail.ip.d42.config.D42Configuration;
 import fk.retail.ip.email.configuration.ConnektConfiguration;
 import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.proc.config.ProcClientConfiguration;
-import fk.retail.ip.requirement.config.EmailConfiguration;
+import fk.retail.ip.requirement.config.RPUIConfiguration;
+import fk.retail.ip.requirement.config.RPUIConfiguration;
 import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
@@ -61,5 +62,5 @@ public class ManagerConfiguration extends Configuration implements HasDataSource
     public ConnektConfiguration connektConfiguration;
 
     @NotNull
-    public EmailConfiguration emailConfiguration;
+    public RPUIConfiguration RPUIConfiguration;
 }

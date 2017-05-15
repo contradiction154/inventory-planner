@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by agarwal.vaibhav on 11/05/17.
  */
 @Data
-public class EmailConfiguration
+public class RPUIConfiguration
 {
     String host;
     String path;

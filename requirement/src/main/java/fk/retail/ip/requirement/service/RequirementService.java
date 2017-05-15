@@ -8,7 +8,8 @@ import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.d42.client.D42Client;
 import fk.retail.ip.proc.model.PushToProcResponse;
-import fk.retail.ip.requirement.config.EmailConfiguration;
+import fk.retail.ip.requirement.config.RPUIConfiguration;
+import fk.retail.ip.requirement.config.RPUIConfiguration;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.*;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
@@ -62,7 +63,7 @@ public class RequirementService {
     private final int PAGE_SIZE = 20;
     private final String BUCKET_NAME = "ip_requirements";
     private final ApprovalEmailHelper appovalEmailHelper;
-    private final EmailConfiguration emailConfiguration;
+    private final RPUIConfiguration RPUIConfiguration;
 
     @Inject
     public RequirementService(RequirementRepository requirementRepository,
@@ -77,7 +78,7 @@ public class RequirementService {
                               PushToProcCommand pushToProcCommand,
                               D42Client d42Client,
                               ApprovalEmailHelper appovalEmailHelper,
-                              EmailConfiguration emailConfiguration
+                              RPUIConfiguration RPUIConfiguration
                               ) {
 
         this.requirementRepository = requirementRepository;
@@ -93,7 +94,7 @@ public class RequirementService {
         this.requirementEventLogRepository = requirementEventLogRepository;
         this.d42Client = d42Client;
         this.appovalEmailHelper = appovalEmailHelper;
-        this.emailConfiguration = emailConfiguration;
+        this.RPUIConfiguration = RPUIConfiguration;
     }
 
     public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
@@ -220,7 +221,7 @@ public class RequirementService {
                         fdpRequirementIngestor,
                         requirementEventLogRepository,
                         appovalEmailHelper,
-                        emailConfiguration
+                        RPUIConfiguration
                 )
         );
         log.info("State changed for {} number of requirements", requirements.size());

@@ -9,6 +9,7 @@ import javax.persistence.*;
  */
 @Data
 @Entity
+@Table(name="email_details_new")
 public class EmailDetails {
 
     @Id
@@ -19,6 +20,7 @@ public class EmailDetails {
     String toList;
     String ccList;
     String stencilId;
-    String group;
+    //String group;
+    String emailType;
 
 }

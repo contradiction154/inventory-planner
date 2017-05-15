@@ -1,7 +1,9 @@
-package fk.retail.ip.email.internal.enums;
+package fk.retail.ip.requirement.internal.enums;
+
+import fk.retail.ip.email.internal.enums.EmailParams;
 
 /**
- * Created by agarwal.vaibhav on 11/05/17.
+ * Created by agarwal.vaibhav on 14/05/17.
  */
 public enum ApprovalEmailParams implements EmailParams {
     USERNAME("userName"),

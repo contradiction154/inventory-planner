@@ -1,4 +1,4 @@
-package fk.retail.ip.email.internal.repository;
+package fk.retail.ip.requirement.internal.repository;
 
 import com.google.inject.Inject;
 import fk.retail.ip.email.model.EmailDetails;
@@ -10,7 +10,7 @@ import javax.persistence.TypedQuery;
 import java.util.List;
 
 /**
- * Created by agarwal.vaibhav on 09/05/17.
+ * Created by agarwal.vaibhav on 14/05/17.
  */
 public class JPAEmailDetailsRepository extends SimpleJpaGenericRepository<EmailDetails, Long> implements EmailDetailsRepository {
 
@@ -19,10 +19,10 @@ public class JPAEmailDetailsRepository extends SimpleJpaGenericRepository<EmailD
         super(entityManagerProvider);
     }
 
-    public EmailDetails getEmailDetails(String stencilId, String groupName) {
+    public EmailDetails getEmailDetails(String stencilId, String emailType) {
         TypedQuery<EmailDetails> query = getEntityManager().createNamedQuery("findEmailDetailsByStencilId", EmailDetails.class);
         query.setParameter("stencilId", stencilId);
-        query.setParameter("groupName", groupName);
+        query.setParameter("emailType", emailType);
         List<EmailDetails> emailDetailsList;
         emailDetailsList = query.getResultList();
         if (emailDetailsList.isEmpty()) {

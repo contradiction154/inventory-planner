@@ -1,9 +1,8 @@
 package fk.retail.ip.requirement.service;
 
 import com.google.common.collect.Lists;
-import fk.retail.ip.email.internal.enums.ApprovalEmailParams;
 import fk.retail.ip.email.internal.enums.EmailParams;
-import fk.retail.ip.requirement.config.EmailConfiguration;
+import fk.retail.ip.requirement.config.RPUIConfiguration;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.EventLogger;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
@@ -11,10 +10,7 @@ import fk.retail.ip.requirement.internal.command.PayloadCreationHelper;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementApprovalTransition;
-import fk.retail.ip.requirement.internal.enums.EventType;
-import fk.retail.ip.requirement.internal.enums.FdpRequirementEventType;
-import fk.retail.ip.requirement.internal.enums.OverrideKey;
-import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
+import fk.retail.ip.requirement.internal.enums.*;
 import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
@@ -77,7 +73,7 @@ public class ApprovalService<E> {
         private FdpRequirementIngestorImpl fdpRequirementIngestor;
         private RequirementEventLogRepository requirementEventLogRepository;
         private ApprovalEmailHelper appovalEmailHelper;
-        private EmailConfiguration emailConfiguration;
+        private RPUIConfiguration RPUIConfiguration;
 
         public CopyOnStateChangeAction(
                 RequirementRepository requirementRepository,
@@ -85,14 +81,14 @@ public class ApprovalService<E> {
                 FdpRequirementIngestorImpl fdpRequirementIngestor,
                 RequirementEventLogRepository requirementEventLogRepository,
                 ApprovalEmailHelper appovalEmailHelper,
-                EmailConfiguration emailConfiguration
+                RPUIConfiguration RPUIConfiguration
         ) {
             this.requirementRepository = requirementRepository;
             this.requirementApprovalStateTransitionRepository = requirementApprovalStateTransitionRepository;
             this.fdpRequirementIngestor = fdpRequirementIngestor;
             this.requirementEventLogRepository = requirementEventLogRepository;
             this.appovalEmailHelper = appovalEmailHelper;
-            this.emailConfiguration = emailConfiguration;
+            this.RPUIConfiguration = RPUIConfiguration;
         }
 
 
@@ -198,10 +194,10 @@ public class ApprovalService<E> {
         private String getUrl(String groupName, String state) {
             try {
                 String requirementLink;
-                String path = emailConfiguration.getPath() + state;
+                String path = RPUIConfiguration.getPath() + state;
                 URI uri = new URIBuilder()
                         .setScheme("http")
-                        .setHost(emailConfiguration.getHost())
+                        .setHost(RPUIConfiguration.getHost())
                         .setPath(path)
                         .setParameter("current_state", state)
                         .setParameter("filter[group]", groupName)

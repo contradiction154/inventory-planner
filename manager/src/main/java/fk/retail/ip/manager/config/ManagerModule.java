@@ -9,7 +9,8 @@ import fk.retail.ip.d42.config.D42Configuration;
 import fk.retail.ip.email.configuration.ConnektConfiguration;
 import fk.retail.ip.fdp.config.FdpConfiguration;
 import fk.retail.ip.proc.config.ProcClientConfiguration;
-import fk.retail.ip.requirement.config.EmailConfiguration;
+import fk.retail.ip.requirement.config.RPUIConfiguration;
+import fk.retail.ip.requirement.config.RPUIConfiguration;
 import fk.retail.ip.requirement.config.TriggerRequirementConfiguration;
 import fk.retail.ip.ssl.config.SslClientConfiguration;
 import fk.retail.ip.zulu.config.ZuluConfiguration;
@@ -93,7 +94,7 @@ public class ManagerModule extends AbstractModule {
     }
 
     @Provides
-    public EmailConfiguration getEmailConfiguration(ManagerConfiguration managerConfiguration) {
-        return managerConfiguration.getEmailConfiguration();
+    public RPUIConfiguration getEmailConfiguration(ManagerConfiguration managerConfiguration) {
+        return managerConfiguration.getRPUIConfiguration();
     }
 }

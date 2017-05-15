@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class ChannelInfo {
     String type;
-    List<Person> to;
-    Person from;
+    List<String> to;
+    String from;
     String cc;
 }
