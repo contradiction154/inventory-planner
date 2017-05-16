@@ -12,5 +12,5 @@ public class ChannelInfo {
     String type;
     List<String> to;
     String from;
-    String cc;
+    List<String> cc;
 }

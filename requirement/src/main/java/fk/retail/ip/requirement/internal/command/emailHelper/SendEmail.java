@@ -6,6 +6,7 @@ import fk.retail.ip.email.model.EmailDetails;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.repository.EmailDetailsRepository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,8 +25,8 @@ public abstract class SendEmail {
 
     abstract void send(Map<EmailParams, String> params, String state, boolean forward);
 
-    public EmailDetails getEmailDetails(String stencilId, String emailType) {
-        EmailDetails emailDetails = emailDetailsRepository.getEmailDetails(stencilId, emailType);
-        return emailDetails;
+    public List<EmailDetails> getEmailDetails(List<String> groupNames) {
+        List<EmailDetails> emailDetailsList = emailDetailsRepository.getEmailDetails(groupNames);
+        return emailDetailsList;
     }
 }

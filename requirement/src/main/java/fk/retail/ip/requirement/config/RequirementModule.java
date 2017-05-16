@@ -2,9 +2,7 @@ package fk.retail.ip.requirement.config;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.repository.*;
-import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.resource.RequirementResource;
 import fk.retail.ip.requirement.resource.TestResource;
 
@@ -36,6 +34,7 @@ public class RequirementModule extends AbstractModule {
         bind(RequirementEventLogRepository.class).to(JPARequirementEventLogRepository.class);
         //TODO:remove
         bind(ProjectionRepository.class).to(ProjectionRepositoryImpl.class);
+        bind(EmailDetailsRepository.class).to(JPAEmailDetailsRepository.class);
 
         bind(String.class).annotatedWith(Names.named("actionConfiguration")).toInstance("/requirement-state-actions.json");
     }

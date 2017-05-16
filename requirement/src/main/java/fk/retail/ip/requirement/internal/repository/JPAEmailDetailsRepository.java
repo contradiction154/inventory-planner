@@ -19,18 +19,10 @@ public class JPAEmailDetailsRepository extends SimpleJpaGenericRepository<EmailD
         super(entityManagerProvider);
     }
 
-    public EmailDetails getEmailDetails(String stencilId, String emailType) {
+    public List<EmailDetails> getEmailDetails(List<String> groupNames) {
         TypedQuery<EmailDetails> query = getEntityManager().createNamedQuery("findEmailDetailsByStencilId", EmailDetails.class);
-        query.setParameter("stencilId", stencilId);
-        query.setParameter("emailType", emailType);
-        List<EmailDetails> emailDetailsList;
-        emailDetailsList = query.getResultList();
-        if (emailDetailsList.isEmpty()) {
-            return null;
-        } else {
-            EmailDetails emailDetails = emailDetailsList.get(0);
-            return emailDetails;
-        }
-
+        query.setParameter("group", groupNames);
+        List<EmailDetails> emailDetailsList = query.getResultList();
+        return emailDetailsList;
     }
 }

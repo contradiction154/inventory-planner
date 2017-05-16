@@ -9,18 +9,12 @@ import javax.persistence.*;
  */
 @Data
 @Entity
-@Table(name="email_details_new")
+@Table(name="user_groups")
 public class EmailDetails {
 
     @Id
     @Access(AccessType.PROPERTY)
     protected Long id;
-
-    String from;
-    String toList;
-    String ccList;
-    String stencilId;
-    //String group;
-    String emailType;
-
+    String group;
+    String email_list;
 }

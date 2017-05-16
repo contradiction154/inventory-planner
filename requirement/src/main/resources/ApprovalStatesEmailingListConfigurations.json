@@ -1,0 +1,20 @@
+{
+  "state:": {
+    "verified": {
+      "forward": {
+        "to": ["CDO"],
+        "cc": ["IPC", "BIZFIN"]
+      }
+    },
+    "approved": {
+      "forward": {
+        "to": ["BIZFIN"],
+        "cc": ["IPC", "CDO"]
+      },
+      "backward": {
+        "to": ["IPC"],
+        "cc": ["CDO", "BIZFIN"]
+      }
+    }
+  }
+}

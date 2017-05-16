@@ -448,8 +448,7 @@
             SELECT t
             FROM EmailDetails t
             WHERE
-                t.stencilId = :stencilId AND
-                t.group = :groupName
+                t.group IN :group
                   ]]>
         </query>
     </named-query>

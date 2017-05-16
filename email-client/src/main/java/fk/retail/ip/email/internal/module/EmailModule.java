@@ -11,6 +11,5 @@ public class EmailModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ConnektClient.class).to(HystrixConnektClient.class);
-        bind(EmailDetailsRepository.class).to(JPAEmailDetailsRepository.class);
     }
 }

@@ -2,7 +2,6 @@ package fk.retail.ip.requirement.model;
 
 import lombok.Data;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,5 +9,5 @@ import java.util.Map;
  */
 @Data
 public class StencilConfigModel {
-    Map<String, Map<String, String>> stateStencilMapping;
+    Map<String, String> emailTypeStencilMapping;
 }
