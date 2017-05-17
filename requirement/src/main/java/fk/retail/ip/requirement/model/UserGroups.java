@@ -9,5 +9,5 @@ import java.util.Map;
  */
 @Data
 public class UserGroups {
-    Map<String, Map<String, EmailingList>> userGroupConfig;
+    Map<String, Map<String, EmailRecepientList>> stateUserGroups;
 }

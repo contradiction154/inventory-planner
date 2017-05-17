@@ -62,5 +62,8 @@ public interface Constants {
 
     String FROM_EMAIL_ADDRESS = "ip-oncall@flipkart.com";
 
+    String APPROVAL_CHANNEL_INFO_TYPE = "EMAIL";
+    String APPROVAL_CONTEXT_ID = "fk-inventory-planner";
+
 }
 

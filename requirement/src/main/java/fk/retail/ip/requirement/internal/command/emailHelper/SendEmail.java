@@ -2,9 +2,9 @@ package fk.retail.ip.requirement.internal.command.emailHelper;
 
 import fk.retail.ip.email.client.ConnektClient;
 import fk.retail.ip.email.internal.enums.EmailParams;
-import fk.retail.ip.email.model.EmailDetails;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.repository.EmailDetailsRepository;
+import fk.retail.ip.requirement.model.GroupEmailIds;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +25,8 @@ public abstract class SendEmail {
 
     abstract void send(Map<EmailParams, String> params, String state, boolean forward);
 
-    public List<EmailDetails> getEmailDetails(List<String> groupNames) {
-        List<EmailDetails> emailDetailsList = emailDetailsRepository.getEmailDetails(groupNames);
-        return emailDetailsList;
+    public List<GroupEmailIds> getEmailDetails(List<String> groupNames) {
+        List<GroupEmailIds> groupEmailIdsList = emailDetailsRepository.getEmailDetails(groupNames);
+        return groupEmailIdsList;
     }
 }

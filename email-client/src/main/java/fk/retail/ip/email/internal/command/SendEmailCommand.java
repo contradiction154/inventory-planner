@@ -3,8 +3,8 @@ package fk.retail.ip.email.internal.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import fk.retail.ip.email.configuration.ConnektConfiguration;
-import fk.retail.ip.email.model.ConnektPayload;
 import fk.retail.ip.email.internal.Constants;
+import fk.retail.ip.email.model.ConnektPayload;
 import fk.sp.common.extensions.dropwizard.jersey.NoAuthClient;
 import lombok.extern.slf4j.Slf4j;
 

@@ -446,7 +446,7 @@
         <query>
             <![CDATA[
             SELECT t
-            FROM EmailDetails t
+            FROM GroupEmailIds t
             WHERE
                 t.group IN :group
                   ]]>
