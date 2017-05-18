@@ -7,6 +7,7 @@ import fk.retail.ip.email.client.ConnektClient;
 import fk.retail.ip.email.internal.enums.EmailParams;
 import fk.retail.ip.email.model.ChannelInfo;
 import fk.retail.ip.email.model.ConnektPayload;
+import fk.retail.ip.email.model.Person;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.enums.ApprovalEmailParams;
 import fk.retail.ip.requirement.internal.repository.EmailDetailsRepository;
@@ -100,8 +101,8 @@ public class ApprovalEmailHelper extends SendEmail {
         channelInfo.setType(Constants.APPROVAL_CHANNEL_INFO_TYPE);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        List<String> toList = new ArrayList<>();
-        List<String> ccList = new ArrayList<>();
+        List<Person> toList = new ArrayList<>();
+        List<Person> ccList = new ArrayList<>();
         groupEmailIdsList.forEach(group -> {
             try {
                 /*Parse the json emailing list fetched from db*/

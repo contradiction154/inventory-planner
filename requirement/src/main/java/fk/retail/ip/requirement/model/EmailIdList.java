@@ -1,5 +1,6 @@
 package fk.retail.ip.requirement.model;
 
+import fk.retail.ip.email.model.Person;
 import lombok.Data;
 
 import java.util.List;
@@ -9,5 +10,5 @@ import java.util.List;
  */
 @Data
 public class EmailIdList {
-    List<String> list;
+    List<Person> list;
 }
