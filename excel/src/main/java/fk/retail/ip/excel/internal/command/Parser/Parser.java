@@ -1,7 +1,5 @@
-package fk.retail.ip.core.poi;
+package fk.retail.ip.excel.internal.command.Parser;
 
-import fk.retail.ip.core.enums.CellType;
-import fk.retail.ip.core.enums.ColumnType;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.ss.usermodel.Cell;
@@ -18,12 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author pragalathan.m
+ * Created by agarwal.vaibhav on 17/05/17.
  */
-public class SpreadSheetReader {
-
-    //    private final DecimalFormat formatter = new DecimalFormat("#.###");
-    public List<Map<String, Object>> read(InputStream xlsxFile) throws InvalidFormatException, IOException {
+public interface Parser {
+    default List<Map<String, Object>> read(InputStream xlsxFile) throws InvalidFormatException, IOException {
         List<Map<String, Object>> rows = new ArrayList<>();
         try (OPCPackage pkg = OPCPackage.open(xlsxFile)) {
 
@@ -112,8 +108,9 @@ public class SpreadSheetReader {
         return rows;
     }
 
-    public String removeUnnecessaryCharacters(String value) {
+    default String removeUnnecessaryCharacters(String value) {
         value = value.trim();
         return value.replace("\u00A0", "");
     }
+
 }
