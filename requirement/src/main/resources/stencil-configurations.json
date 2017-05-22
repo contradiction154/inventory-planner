@@ -1,11 +1,11 @@
 {
   "emailTypeStencilMapping": {
-    "verified_forward": "STN3MOG3F",
-    "approved_forward": "STNK85ZW9",
-    "approved_backward": "STNVI1MMU",
-    "bd_approved_forward": "STNM6GJCP",
-    "bd_approved_backward": "STNMDH4D3",
-    "bizfin_approved_backward": "STNE6M5V5",
-    "ipc_finalised_forward": "STNIOCM8V"
+    "verified_forward": "STNVNFI9I",
+    "approved_forward": "STNS8K8E2",
+    "approved_backward": "STNO7MBBM",
+    "bd_approved_forward": "STNBETGBN",
+    "bd_approved_backward": "STN2UN7FJ",
+    "bizfin_approved_backward": "STNBQJYD5",
+    "ipc_finalised_forward": "STNMN5OLV"
   }
 }

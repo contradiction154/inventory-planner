@@ -15,6 +15,28 @@
         "to": ["IPC"],
         "cc": ["CDO", "BIZFIN"]
       }
+    },
+    "bd_approved": {
+      "forward": {
+        "to" : ["IPC"],
+        "cc": ["CDO", "BIZFIN"]
+      },
+      "backward": {
+        "to": ["CDO"],
+        "cc": ["IPC", "BIZFIN"]
+      }
+    },
+    "bizfin_approved": {
+      "backward": {
+        "to": ["BIZFIN"],
+        "cc": ["IPC", "CDO"]
+      }
+    },
+    "ipc_finalized": {
+      "forward": {
+        "to" : ["CDO", "BIZFIN"],
+        "cc": ["IPC"]
+      }
     }
   }
 }
