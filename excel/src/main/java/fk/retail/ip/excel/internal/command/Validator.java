@@ -9,9 +9,8 @@ import java.util.Map;
 /**
  * Created by agarwal.vaibhav on 17/05/17.
  */
-public interface Validator {
-
-    default void validate(List<Column> columnList, List<Map<String, Object>> rows) {
+public class Validator {
+    public void validate(List<Column> columnList, List<Map<String, Object>> rows) {
         for (Map<String, Object> row : rows) {
             columnList.forEach(column -> {
                 List<Validation> validations = column.getPredicates();

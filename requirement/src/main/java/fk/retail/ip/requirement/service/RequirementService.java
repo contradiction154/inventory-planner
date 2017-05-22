@@ -146,6 +146,8 @@ public class RequirementService {
             return uploadResponse;
         }
         ObjectMapper mapper = new ObjectMapper();
+        RequirementExcel requirementExcel = new RequirementExcel(requirementState);
+        //requirementExcel.validate();
 
         try {
             List<RequirementUploadLineItem> requirementUploadLineItems = mapper.convertValue(parsedMappingList,

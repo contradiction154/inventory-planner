@@ -11,9 +11,7 @@ import java.util.List;
 /**
  * Created by agarwal.vaibhav on 17/05/17.
  */
-public class RequirementExcel implements Excel {
-
-    private List<Column> columnList;
+public class RequirementExcel extends Excel {
 
     public RequirementExcel(String state) {
         switch (state) {
