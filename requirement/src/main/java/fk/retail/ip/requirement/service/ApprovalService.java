@@ -188,6 +188,7 @@ public class ApprovalService<E> {
             paramsMap.put(ApprovalEmailParams.GROUPNAME, groupName);
             paramsMap.put(ApprovalEmailParams.TIMESTAMP, timestamp);
             paramsMap.put(ApprovalEmailParams.LINK, getUrl(groupName, state));
+            paramsMap.put(ApprovalEmailParams.CREATIONDATE, getRequirementsCreationDate(groupName));
             return paramsMap;
         }
 
@@ -214,6 +215,11 @@ public class ApprovalService<E> {
         }
         private String getCurrentTimestamp() {
             return new Date().toString();
+        }
+
+        private String getRequirementsCreationDate(String groupName) {
+            Date date = requirementRepository.getProjectionCreationDate(groupName);
+            return date.toString();
         }
 
     }

@@ -10,7 +10,8 @@ public enum ApprovalEmailParams implements EmailParams {
     USER("user"),
     GROUPNAME("groupName"),
     TIMESTAMP("timestamp"),
-    LINK("link");
+    LINK("link"),
+    CREATIONDATE("creationDate");
 
     public String param;
 

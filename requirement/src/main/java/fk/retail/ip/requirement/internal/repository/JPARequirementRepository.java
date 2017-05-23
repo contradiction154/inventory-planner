@@ -206,4 +206,13 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         return query.getResultList();
     }
 
+    @Override
+    public Date getProjectionCreationDate(String groupName) {
+        TypedQuery<Date> query = getEntityManager().createNamedQuery("findRequirementCreationDateByGroups", Date.class);
+        query.setParameter("group", groupName);
+        query.setMaxResults(1);
+        Date creationDate = query.getResultList().get(0);
+        return creationDate;
+    }
+
 }

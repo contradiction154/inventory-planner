@@ -117,6 +117,8 @@ public class ApprovalEmailHelper extends SendEmail {
             }
         });
 
+        getUniqueRecepients(toList, ccList);
+
         channelInfo.setCc(ccList);
         channelInfo.setTo(toList);
 
@@ -150,6 +152,12 @@ public class ApprovalEmailHelper extends SendEmail {
             userGroupList.add(user + "_" + groupName);
         });
         return userGroupList;
+    }
+
+    private void getUniqueRecepients(List<Person> toList, List<Person> ccList) {
+        List<Person> commonPerson = new ArrayList<>(toList);
+        commonPerson.retainAll(ccList);
+        ccList.removeAll(toList);
     }
 
 }

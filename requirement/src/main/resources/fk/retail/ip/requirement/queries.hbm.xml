@@ -453,9 +453,15 @@
         </query>
     </named-query>
 
-    findEmailDetailsByStencilId
-
-
-
+    <named-query name="findRequirementCreationDateByGroups">
+        <query>
+            <![CDATA[
+            SELECT t.createdAt
+            FROM Requirement t
+            WHERE
+                t.requirementSnapshot.group = :group
+                  ]]>
+        </query>
+    </named-query>
 
 </entity-mappings>
