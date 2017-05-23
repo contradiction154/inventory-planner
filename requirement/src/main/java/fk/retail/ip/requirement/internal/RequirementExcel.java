@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class RequirementExcel extends Excel {
 
+    List<Column> columnList = new ArrayList<>();
+
     public RequirementExcel(String state) {
         switch (state) {
             case "verified":

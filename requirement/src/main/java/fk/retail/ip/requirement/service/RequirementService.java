@@ -5,11 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.d42.client.D42Client;
 import fk.retail.ip.proc.model.PushToProcResponse;
 import fk.retail.ip.requirement.config.EmailConfiguration;
 import fk.retail.ip.requirement.internal.Constants;
-import fk.retail.ip.requirement.internal.RequirementExcel;
 import fk.retail.ip.requirement.internal.command.*;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -129,11 +129,11 @@ public class RequirementService {
 
         //d42Client.put(BUCKET_NAME, objectKey, new ByteArrayInputStream(baos.toByteArray()), contentType);
 
-        //SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
-        //List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(new ByteArrayInputStream(baos.toByteArray()));
+        SpreadSheetReader spreadSheetReader = new SpreadSheetReader();
+        List<Map<String, Object>> parsedMappingList = spreadSheetReader.read(new ByteArrayInputStream(baos.toByteArray()));
 
-        RequirementExcel requirementExcel = new RequirementExcel(requirementState);
-        List<Map<String, Object>> parsedMappingList = requirementExcel.read(new ByteArrayInputStream(baos.toByteArray()));
+        //RequirementExcel requirementExcel = new RequirementExcel(requirementState);
+        //List<Map<String, Object>> parsedMappingList = requirementExcel.read(new ByteArrayInputStream(baos.toByteArray()));
 
         //requirementExcel.validate(parsedMappingList);
 
@@ -146,7 +146,7 @@ public class RequirementService {
             return uploadResponse;
         }
         ObjectMapper mapper = new ObjectMapper();
-        RequirementExcel requirementExcel = new RequirementExcel(requirementState);
+        //RequirementExcel requirementExcel = new RequirementExcel(requirementState);
         //requirementExcel.validate();
 
         try {

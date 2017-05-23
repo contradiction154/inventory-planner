@@ -1,3 +1,4 @@
+
 package fk.retail.ip.manager.config;
 
 import fk.retail.ip.d42.config.D42Configuration;

@@ -11,10 +11,7 @@ import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by agarwal.vaibhav on 18/05/17.
@@ -30,18 +27,21 @@ public class CreateTemplate {
             XSSFWorkbook workbook = new XSSFWorkbook();
             XSSFSheet spreadSheet = workbook.createSheet("test");
             XSSFRow row;
-            Map<String, Object[]> excelValueMap = new HashMap();
-            excelValueMap.put("1", new Object[]{"requirement id", "name"});
-            Set<String> keyset = excelValueMap.keySet();
+            //Map<String, Object[]> excelValueMap = new HashMap();
+            //excelValueMap.put("1", new Object[]{"Requirement id", "name", "fsn", "qty", "app"});
+            List<String> columnHeaders = new ArrayList<>();
+            columnList.forEach(column -> {
+                columnHeaders.add(column.getName());
+            });
+            //List<String> columnHeaders = new ArrayList<>(Arrays.asList("Requirement id", "name", "fsn", "qty", "app"));
+            //Set<String> keyset = new HashSet<>(Arrays.asList("Requirement id", "name", "fsn", "qty", "app"));
+            //Set<String> keyset = excelValueMap.keySet();
             int rowid = 0;
-            for (String key : keyset) {
-                row = spreadSheet.createRow(rowid++);
-                Object[] objectArr = excelValueMap.get(key);
-                int cellid = 0;
-                for (Object obj : objectArr) {
-                    Cell cell = row.createCell(cellid++);
-                    cell.setCellValue((String) obj);
-                }
+            row = spreadSheet.createRow(rowid);
+            int cellid = 0;
+            for (String key : columnHeaders) {
+                Cell cell = row.createCell(cellid++);
+                cell.setCellValue(key);
             }
             //try {
                 //FileOutputStream fs = new FileOutputStream("abc.xlsx");
