@@ -4,7 +4,8 @@
       "forward": {
         "to": ["CDO"],
         "cc": ["IPC", "BIZFIN"]
-      }
+      },
+      "backward": null
     },
     "approved": {
       "forward": {
@@ -27,6 +28,7 @@
       }
     },
     "bizfin_approved": {
+      "forward": null,
       "backward": {
         "to": ["BIZFIN"],
         "cc": ["IPC", "CDO"]
@@ -36,7 +38,8 @@
       "forward": {
         "to" : ["CDO", "BIZFIN"],
         "cc": ["IPC"]
-      }
+      },
+      "backward": null
     }
   }
 }

@@ -69,6 +69,7 @@ public class ApprovalEmailHelper extends SendEmail {
         approvalChannelDataModel.setTimestamp(params.get(ApprovalEmailParams.TIMESTAMP));
         approvalChannelDataModel.setGroupName(params.get(ApprovalEmailParams.GROUPNAME));
         approvalChannelDataModel.setLink(params.get(ApprovalEmailParams.LINK));
+        approvalChannelDataModel.setCreationDate(params.get(ApprovalEmailParams.CREATIONDATE));
         connektPayload.setChannelDataModel(approvalChannelDataModel);
 
         String emailType = getEmailType(state, actionDirection);
@@ -90,6 +91,10 @@ public class ApprovalEmailHelper extends SendEmail {
             groupNames.add(user);
             recepientUserMapping.put(user, "cc");
         });
+
+        if (groupNames.isEmpty()) {
+            return;
+        }
 
         List<GroupEmailIds> groupEmailIdsList = getEmailDetails(groupNames);
         if (groupEmailIdsList == null) {
@@ -137,13 +142,23 @@ public class ApprovalEmailHelper extends SendEmail {
     }
 
     private List<String> getToUserType(String state, String actionDirection, String groupName) {
-        List<String> toUsers =  userGroups.getStateUserGroups().get(state).get(actionDirection).getTo();
-        return createUserGroupList(toUsers, groupName);
+        if (isUserGroupPresent(userGroups, actionDirection, state)) {
+            List<String> toUsers =  userGroups.getStateUserGroups().get(state).get(actionDirection).getTo();
+            return createUserGroupList(toUsers, groupName);
+        } else {
+            return new ArrayList<>();
+        }
+
     }
 
     private List<String> getCCUserType(String state, String actionDirection, String groupName) {
-        List<String> ccUsers = userGroups.getStateUserGroups().get(state).get(actionDirection).getCc();
-        return createUserGroupList(ccUsers, groupName);
+        if (isUserGroupPresent(userGroups, actionDirection, state)) {
+            List<String> ccUsers = userGroups.getStateUserGroups().get(state).get(actionDirection).getCc();
+            return createUserGroupList(ccUsers, groupName);
+        } else {
+            return new ArrayList<>();
+        }
+
     }
 
     private List<String> createUserGroupList(List<String> userList, String groupName) {
@@ -158,6 +173,18 @@ public class ApprovalEmailHelper extends SendEmail {
         List<Person> commonPerson = new ArrayList<>(toList);
         commonPerson.retainAll(ccList);
         ccList.removeAll(toList);
+    }
+
+    private boolean isUserGroupPresent(UserGroups userGroups, String actionDirection, String state) {
+        try {
+            if (userGroups.getStateUserGroups().get(state).get(actionDirection) != null) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (NullPointerException ex) {
+            return false;
+        }
     }
 
 }

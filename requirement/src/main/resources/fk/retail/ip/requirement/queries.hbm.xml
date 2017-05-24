@@ -459,7 +459,9 @@
             SELECT t.createdAt
             FROM Requirement t
             WHERE
-                t.requirementSnapshot.group = :group
+                t.requirementSnapshot.group.name = :group and
+                t.state = :state
+                ORDER BY t.createdAt desc
                   ]]>
         </query>
     </named-query>

@@ -22,6 +22,8 @@ import org.apache.http.client.utils.URIBuilder;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -219,7 +221,8 @@ public class ApprovalService<E> {
 
         private String getRequirementsCreationDate(String groupName) {
             Date date = requirementRepository.getProjectionCreationDate(groupName);
-            return date.toString();
+            DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+            return dateFormat.format(date);
         }
 
     }

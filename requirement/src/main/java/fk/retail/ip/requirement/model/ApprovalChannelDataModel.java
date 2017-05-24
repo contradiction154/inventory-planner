@@ -13,4 +13,5 @@ public class ApprovalChannelDataModel implements ChannelDataModel {
     String userName;
     String timestamp;
     String link;
+    String creationDate;
 }
