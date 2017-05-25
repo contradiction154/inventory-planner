@@ -74,6 +74,10 @@ public class ApprovalEmailHelper extends SendEmail {
 
         String emailType = getEmailType(state, actionDirection);
         String stencilId = getStencilId(emailType);
+        if (stencilId == null || stencilId.isEmpty()) {
+            return;
+        }
+
         connektPayload.setStencilId(stencilId);
 
         List<String> groupNames = new ArrayList<>();
@@ -101,6 +105,7 @@ public class ApprovalEmailHelper extends SendEmail {
             log.info("no emailing list found for given stencilId and group");
             return;
         }
+
 
         ChannelInfo channelInfo = new ChannelInfo();
         channelInfo.setType(Constants.APPROVAL_CHANNEL_INFO_TYPE);
@@ -132,7 +137,7 @@ public class ApprovalEmailHelper extends SendEmail {
         channelInfo.setTo(toList);
 
         connektPayload.setChannelInfo(channelInfo);
-        connektPayload.setContextId(Constants.APPROVAL_CONTEXT_ID);
+        connektPayload.setContextId(fk.retail.ip.requirement.internal.Constants.APPROVAL_CONTEXT_ID);
         connektClient.sendEmail(connektPayload);
 
     }
@@ -199,5 +204,4 @@ public class ApprovalEmailHelper extends SendEmail {
             return false;
         }
     }
-
 }

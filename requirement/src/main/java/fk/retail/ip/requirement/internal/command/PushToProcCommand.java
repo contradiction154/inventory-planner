@@ -66,11 +66,11 @@ public class PushToProcCommand {
         return null;
     }
 
-    private Date getRequiredByDate(Requirement requirement) {
+    public Date getRequiredByDate(Requirement requirement) {
         // set required by date based on holiday calendar
         DateTime dt = new DateTime();
         if(requirement.getSla()!=null)
-            dt.plusDays(requirement.getSla());
+            dt = dt.plusDays(requirement.getSla());
         DateTime adjustedDate = dt;
         if (dt.getDayOfWeek() == DateTimeConstants.SATURDAY) {
             adjustedDate = dt.plusDays(2);
@@ -121,7 +121,6 @@ public class PushToProcCommand {
         //Add PUSHED_TO_PROC, PUSH_TO_PROC_FAILED events to fdp request
         RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
         List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
-        log.info("Adding PUSHED_TO_PROC, PUSH_TO_PROC_FAILED events to fdp request");
         requirementChangeRequest.setRequirement(newEntity);
         requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.STATE.toString(), requirement.getState(), newEntity.getState(), eventType, reason, userId));
         requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);

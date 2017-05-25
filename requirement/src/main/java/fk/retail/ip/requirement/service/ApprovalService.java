@@ -103,6 +103,7 @@ public class ApprovalService<E> {
             List<RequirementChangeRequest> requirementChangeRequestList = Lists.newArrayList();
             List<Requirement> allEnabledRequirements = requirementRepository.find(fsns, true);
             EventType eventType = EventType.APPROVAL;
+            String nextState = requirementToTargetStateMap.get(requirements.get(0).getId());
             for (Requirement requirement : requirements) {
                 String toState = requirementToTargetStateMap.get(requirement.getId());
                 boolean isIPCReviewState = RequirementApprovalState.IPC_REVIEW.toString().equals(toState);
@@ -123,6 +124,7 @@ public class ApprovalService<E> {
                             toStateEntity.get().setQuantity(cdoStateEntity.get().getQuantity());
                         }
                         toStateEntity.get().setSupplier(requirement.getSupplier());
+                        toStateEntity.get().setMrp(requirement.getMrp());
                         toStateEntity.get().setApp(requirement.getApp());
                         toStateEntity.get().setSla(requirement.getSla());
                         toStateEntity.get().setCreatedBy(userId);
@@ -160,7 +162,7 @@ public class ApprovalService<E> {
                 requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
                 requirementChangeRequestList.add(requirementChangeRequest);
             }
-            appovalEmailHelper.send(createStencilParamsMap(groupName, userId, getCurrentTimestamp(), fromState), fromState, forward);
+            appovalEmailHelper.send(createStencilParamsMap(groupName, userId, getCurrentTimestamp(), nextState), fromState, forward);
             log.info("Updating Projections tables for Requirements");
             requirementRepository.updateProjections(requirements, groupToTargetState);
             //Push APPROVE and CANCEL events to fdp

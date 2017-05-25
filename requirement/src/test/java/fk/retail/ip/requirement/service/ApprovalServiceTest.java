@@ -82,6 +82,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Mockito.when(requirementApprovalStateTransitionRepository.getApprovalTransition(Mockito.anyString(), Mockito.eq(true))).thenReturn(Arrays.asList(requirementApprovalTransition));
         Mockito.when(requirementRepository.find(Arrays.asList("fsn1"), true)).thenReturn(Arrays.asList(requirement));
         Mockito.doNothing().when(requirementRepository).updateProjections(Mockito.anyList(), Mockito.anyMap());
+        Mockito.when(requirementRepository.getProjectionCreationDate(Mockito.anyString())).thenReturn(new Date());
         approvalService.changeState(Arrays.asList(requirement), fromState, "userId", true, getter, "", new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository, fdpRequirementIngestor, requirementEventLogRepository, approvalEmailHelper, RPUIConfiguration));
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
         Mockito.verify(requirementRepository).persist(captor.capture());
@@ -109,6 +110,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Mockito.when(requirementApprovalStateTransitionRepository.getApprovalTransition(Mockito.anyString(), Mockito.eq(true))).thenReturn(Arrays.asList(requirementApprovalTransition));
         Mockito.when(requirementRepository.find(Arrays.asList("fsn1"), true)).thenReturn(Arrays.asList(requirement));
         Mockito.doNothing().when(requirementRepository).updateProjections(Mockito.anyList(), Mockito.anyMap());
+        Mockito.when(requirementRepository.getProjectionCreationDate(Mockito.anyString())).thenReturn(new Date());
         approvalService.changeState(Arrays.asList(requirement), fromState, "userId", true, getter, "", new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository, fdpRequirementIngestor, requirementEventLogRepository, approvalEmailHelper, RPUIConfiguration));
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
         Mockito.verify(requirementRepository).persist(captor.capture());
@@ -137,6 +139,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Mockito.doNothing().when(requirementRepository).updateProjections(Mockito.anyList(), Mockito.anyMap());
         List<Requirement> allEnabledRequirements = Arrays.asList(createRequirement(toState, false));
         Mockito.when(requirementRepository.find(Arrays.asList("fsn1"), true)).thenReturn(allEnabledRequirements);
+        Mockito.when(requirementRepository.getProjectionCreationDate(Mockito.anyString())).thenReturn(new Date());
         approvalService.changeState(Arrays.asList(requirement), fromState, "userId", true, getter, "", new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository, fdpRequirementIngestor, requirementEventLogRepository, approvalEmailHelper, RPUIConfiguration));
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
         Assert.assertEquals(false, requirement.isCurrent());
@@ -162,6 +165,7 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         List<Requirement> allEnabledRequirements = Arrays.asList(createRequirement(toState, false));
         Mockito.doNothing().when(requirementRepository).updateProjections(Mockito.anyList(), Mockito.anyMap());
         Mockito.when(requirementRepository.find(Arrays.asList("fsn1"), true)).thenReturn(allEnabledRequirements);
+        Mockito.when(requirementRepository.getProjectionCreationDate(Mockito.anyString())).thenReturn(new Date());
         approvalService.changeState(Arrays.asList(requirement), fromState, "userId", true, getter, "", new ApprovalService.CopyOnStateChangeAction(requirementRepository, requirementApprovalStateTransitionRepository, fdpRequirementIngestor, requirementEventLogRepository, approvalEmailHelper, RPUIConfiguration));
         Mockito.verify(requirementEventLogRepository).persist(argumentCaptor.capture());
         Assert.assertEquals(false, requirement.isCurrent());
