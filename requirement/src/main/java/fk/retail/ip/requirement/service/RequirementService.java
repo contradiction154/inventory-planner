@@ -7,9 +7,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
 import fk.retail.ip.d42.client.D42Client;
+import fk.retail.ip.excel.internal.command.enums.CellType;
+import fk.retail.ip.excel.internal.command.model.Column;
+import fk.retail.ip.excel.internal.command.validation.IsInteger;
+import fk.retail.ip.excel.internal.command.validation.Validation;
 import fk.retail.ip.proc.model.PushToProcResponse;
 import fk.retail.ip.requirement.config.EmailConfiguration;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.RequirementExcel;
 import fk.retail.ip.requirement.internal.command.*;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.Requirement;
@@ -119,7 +124,7 @@ public class RequirementService {
         byte[] buffer = new byte[1024];
         int len;
         while ((len = inputStream.read(buffer)) > -1 ) {
-            baos.write(buffer, 0, len);
+
         }
         baos.flush();
         String fileName = fileDetail.getFileName();
@@ -146,8 +151,9 @@ public class RequirementService {
             return uploadResponse;
         }
         ObjectMapper mapper = new ObjectMapper();
-        //RequirementExcel requirementExcel = new RequirementExcel(requirementState);
-        //requirementExcel.validate();
+        RequirementExcel requirementExcel = new RequirementExcel(requirementState);
+        List<Map<String, String>> result = requirementExcel.parse(inputStream);
+        requirementExcel.validate(requirementExcel.getColumnList(), result);
 
         try {
             List<RequirementUploadLineItem> requirementUploadLineItems = mapper.convertValue(parsedMappingList,
@@ -303,5 +309,16 @@ public class RequirementService {
 
     public void calculateRequirement(CalculateRequirementRequest calculateRequirementRequest) {
         calculateRequirementCommandProvider.get().withFsns(calculateRequirementRequest.getFsns()).execute();
+    }
+
+    private List<Column> createColumns() {
+        List<Column> columnList = new ArrayList<>();
+        List<Validation> quantityValidations = new ArrayList<>();
+        quantityValidations.add(new IsInteger());
+        Column quantity = new Column("quantity", CellType.NUMERIC, quantityValidations);
+        Column app = new Column("app", CellType.NUMERIC, new ArrayList<>());
+        columnList.add(quantity);
+        columnList.add(app);
+        return columnList;
     }
 }
