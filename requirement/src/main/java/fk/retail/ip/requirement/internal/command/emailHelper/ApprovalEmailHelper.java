@@ -121,6 +121,10 @@ public class ApprovalEmailHelper extends SendEmail {
                 log.debug("unable to parse json");
             }
         });
+        if (toList.isEmpty() && ccList.isEmpty()) {
+            log.debug("no emailing list found");
+            return;
+        }
 
         getUniqueRecepients(toList, ccList);
 
@@ -169,7 +173,16 @@ public class ApprovalEmailHelper extends SendEmail {
         return userGroupList;
     }
 
+    /*
+    * Remove the common mail addresses from cc-list
+    * In case to-list is empty to-list is set to cc-list and cc-list is marked as empty
+    * */
     private void getUniqueRecepients(List<Person> toList, List<Person> ccList) {
+        if (toList.isEmpty()) {
+            toList.addAll(ccList);
+            ccList.clear();
+            return;
+        }
         List<Person> commonPerson = new ArrayList<>(toList);
         commonPerson.retainAll(ccList);
         ccList.removeAll(toList);
