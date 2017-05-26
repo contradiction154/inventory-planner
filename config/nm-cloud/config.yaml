@@ -132,9 +132,9 @@ d42Configuration:
   url: "http://10.47.2.22"
 
 connektConfiguration:
-  url: http://10.47.4.150:80/v1/send/email/flipkart-promo
-  x-api-key: BM9kig6BGwN68aeJG2ESWkxt8
+  url: http://10.47.0.120:80/v1/send/email/flipkart
+  x-api-key: fNmCcR7kE7Qwo5djXGRWP483AMJ37iZqfy7wTagepejiNJFD
 
-emailConfiguration:
+RPUIConfiguration:
   host: 10.85.52.190
   path: "/projection/"

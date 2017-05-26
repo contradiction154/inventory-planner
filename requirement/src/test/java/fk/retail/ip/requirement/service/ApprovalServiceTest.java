@@ -1,18 +1,17 @@
 package fk.retail.ip.requirement.service;
 
+import fk.retail.ip.email.internal.enums.EmailParams;
 import fk.retail.ip.requirement.config.RPUIConfiguration;
 import fk.retail.ip.requirement.config.TestDbModule;
 import fk.retail.ip.requirement.internal.Constants;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.command.emailHelper.ApprovalEmailHelper;
 import fk.retail.ip.requirement.internal.entities.*;
+import fk.retail.ip.requirement.internal.enums.ApprovalEmailParams;
 import fk.retail.ip.requirement.internal.enums.EventType;
 import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
-import fk.retail.ip.requirement.internal.repository.RequirementApprovalTransitionRepository;
-import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
-import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.internal.repository.TestHelper;
+import fk.retail.ip.requirement.internal.repository.*;
 import fk.sp.common.extensions.jpa.TransactionalJpaRepositoryTest;
 import org.jukito.JukitoRunner;
 import org.jukito.UseModules;
@@ -25,6 +24,7 @@ import org.mockito.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -58,8 +58,14 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
     @Captor
     private ArgumentCaptor<List<RequirementEventLog>> argumentCaptor;
 
+    @Captor
+    private ArgumentCaptor<Map<EmailParams, String>> emailArgumentCaptor;
+
     @Mock
     private RPUIConfiguration RPUIConfiguration;
+
+    @Mock
+    EmailDetailsRepository emailDetailsRepository;
 
 
     @Test(expected = IllegalStateException.class)
@@ -177,6 +183,45 @@ public class ApprovalServiceTest extends TransactionalJpaRepositoryTest {
         Assert.assertEquals("userId", argumentCaptor.getValue().get(0).getUserId());
         Assert.assertEquals(EventType.APPROVAL.toString(), argumentCaptor.getValue().get(0).getEventType());
     }
+
+    @Test
+    public void testEmailNotificationPayload() {
+        String fromState = RequirementApprovalState.PROPOSED.toString();
+        String toState = RequirementApprovalState.CDO_REVIEW.toString();
+        boolean forward = true;
+        Requirement requirement = createRequirement(fromState, true);
+        Function<Requirement, String> getter = Requirement::getState;
+        RequirementApprovalTransition requirementApprovalTransition = TestHelper.
+                getRequirementApprovalTransition(Constants.DEFAULT_TRANSITION_GROUP, fromState, toState, forward);
+        Mockito.when(requirementApprovalStateTransitionRepository.getApprovalTransition
+                (Mockito.anyString(), Mockito.eq(true))).
+                thenReturn(Arrays.asList(requirementApprovalTransition));
+        List<Requirement> allEnabledRequirements = Arrays.asList(createRequirement(toState, false));
+        Mockito.doNothing().when(requirementRepository).updateProjections(Mockito.anyList(), Mockito.anyMap());
+        Mockito.when(requirementRepository.find(Arrays.asList("fsn1"), true)).
+                thenReturn(allEnabledRequirements);
+        Mockito.when(requirementRepository.getProjectionCreationDate(Mockito.anyString())).thenReturn(new Date());
+        approvalService.changeState(
+                Arrays.asList(requirement),
+                fromState,
+                "userId",
+                true, getter,
+                "PowerBanks",
+                new ApprovalService.CopyOnStateChangeAction(
+                        requirementRepository,
+                        requirementApprovalStateTransitionRepository,
+                        fdpRequirementIngestor,
+                        requirementEventLogRepository,
+                        approvalEmailHelper,
+                        RPUIConfiguration)
+        );
+
+        Mockito.verify(approvalEmailHelper).send(emailArgumentCaptor.capture(), Mockito.eq(fromState), Mockito.eq(forward));
+        Assert.assertEquals("PowerBanks", emailArgumentCaptor.getValue().get(ApprovalEmailParams.GROUPNAME));
+        Assert.assertEquals("userId", emailArgumentCaptor.getValue().get(ApprovalEmailParams.USERNAME));
+
+    }
+
 
 
     private Requirement createRequirement(String state, boolean current) {

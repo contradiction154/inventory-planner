@@ -137,7 +137,7 @@ public class ApprovalEmailHelper extends SendEmail {
         channelInfo.setTo(toList);
 
         connektPayload.setChannelInfo(channelInfo);
-        connektPayload.setContextId(fk.retail.ip.requirement.internal.Constants.APPROVAL_CONTEXT_ID);
+        connektPayload.setContextId(Constants.APPROVAL_CONTEXT_ID);
         connektClient.sendEmail(connektPayload);
 
     }

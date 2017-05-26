@@ -7,7 +7,6 @@ import fk.retail.ip.email.internal.enums.EmailParams;
  */
 public enum ApprovalEmailParams implements EmailParams {
     USERNAME("userName"),
-    USER("user"),
     GROUPNAME("groupName"),
     TIMESTAMP("timestamp"),
     LINK("link"),
