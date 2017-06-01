@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import fk.retail.ip.core.poi.SpreadSheetReader;
+import fk.retail.ip.core.poi.SpreadSheetWriter;
 import fk.retail.ip.d42.client.D42Client;
 import fk.retail.ip.excel.internal.command.enums.CellType;
 import fk.retail.ip.excel.internal.command.model.Column;
@@ -30,15 +31,14 @@ import fk.retail.ip.requirement.internal.states.RequirementState;
 import fk.retail.ip.requirement.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.json.JSONException;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.function.Function;
@@ -101,7 +101,8 @@ public class RequirementService {
         this.emailConfiguration = emailConfiguration;
     }
 
-    public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) {
+    public StreamingOutput downloadRequirement(DownloadRequirementRequest downloadRequirementRequest) throws IOException {
+
         List<Long> requirementIds = downloadRequirementRequest.getRequirementIds();
         String requirementState = downloadRequirementRequest.getState();
         Map<String, Object> filters = downloadRequirementRequest.getFilters();
@@ -110,7 +111,55 @@ public class RequirementService {
         List<Requirement> requirements = requirementRepository.findRequirements(requirementIds, requirementState, fsns);
         requirements = requirements.stream().filter(requirement -> !requirement.getWarehouse().equals("all")).collect(Collectors.toList());
         RequirementState state = requirementStateFactory.getRequirementState(requirementState);
-        return state.download(requirements, isLastAppSupplierRequired);
+        List<RequirementDownloadLineItem> requirementDownloadLineItems = state.download(requirements, isLastAppSupplierRequired);
+        RequirementExcel requirementExcel = new RequirementExcel("proposed");
+        SXSSFWorkbook workbook = requirementExcel.create(requirementExcel.getColumnList());
+        //OutputStream outputStream = requirementExcel.create(requirementExcel.getColumnList());
+        SpreadSheetWriter spreadSheetWriter = new SpreadSheetWriter();
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<String> columnHeaders = new ArrayList<>();
+        requirementExcel.getColumnList().forEach(column -> {
+            columnHeaders.add(column.getName());
+        });
+
+        int[] row = {0};
+
+        requirementDownloadLineItems.stream().forEach(item -> {
+            try {
+                spreadSheetWriter.populateTemplate(workbook, objectMapper.convertValue(item, new TypeReference<Map>() {
+                }), columnHeaders, row[0]++);
+            } catch (InvalidFormatException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        StreamingOutput streamingOutput = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException, WebApplicationException {
+                workbook.write(output);
+                workbook.dispose();
+                output.close();
+            }
+        };
+        return streamingOutput;
+
+//        StreamingOutput streamingOutput = new StreamingOutput() {
+//            @Override
+//            public void write(OutputStream output) throws IOException, WebApplicationException {
+//
+//                try {
+//                    spreadSheetWriter.populateTemplate(output, workbook, objectMapper.convertValue(requirementDownloadLineItems, new TypeReference<List<Map>>() {
+//                    }), columnHeaders);
+//                } catch (InvalidFormatException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//        };
+
+        //return streamingOutput;
     }
 
     public UploadResponse uploadRequirement(
@@ -152,7 +201,7 @@ public class RequirementService {
         }
         ObjectMapper mapper = new ObjectMapper();
         RequirementExcel requirementExcel = new RequirementExcel(requirementState);
-        List<Map<String, String>> result = requirementExcel.parse(inputStream);
+        List<Map<String, Object>> result = requirementExcel.parse(inputStream);
         requirementExcel.validate(requirementExcel.getColumnList(), result);
 
         try {

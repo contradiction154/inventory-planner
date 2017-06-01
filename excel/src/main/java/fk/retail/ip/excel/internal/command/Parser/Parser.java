@@ -8,7 +8,7 @@ import java.util.Map;
  * Created by agarwal.vaibhav on 17/05/17.
  */
 public interface Parser {
-    default List<Map<String, String>> parse(InputStream inputStream) {
+    default List<Map<String, Object>> parse(InputStream inputStream) {
         return null;
     }
 }

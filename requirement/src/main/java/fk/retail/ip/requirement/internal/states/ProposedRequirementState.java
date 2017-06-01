@@ -7,11 +7,9 @@ import fk.retail.ip.requirement.internal.command.upload.ProposedUploadCommand;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
-import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideResult;
 
 import java.util.List;
-import javax.ws.rs.core.StreamingOutput;
 
 /**
  * Created by nidhigupta.m on 21/02/17.
@@ -35,7 +33,7 @@ public class ProposedRequirementState implements RequirementState {
     }
 
     @Override
-    public StreamingOutput download(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
+    public List<RequirementDownloadLineItem> download(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
         return downloadProposedCommandProvider.get().execute(requirements, isLastAppSupplierRequired);
     }
 }

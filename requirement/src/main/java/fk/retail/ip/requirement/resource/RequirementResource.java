@@ -5,7 +5,6 @@ import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
-import fk.retail.ip.excel.internal.command.CreateTemplate;
 import fk.retail.ip.proc.model.PushToProcResponse;
 import fk.retail.ip.requirement.model.*;
 import fk.retail.ip.requirement.service.RequirementService;
@@ -22,7 +21,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -65,22 +65,14 @@ public class RequirementResource {
     @Metered(name="downloadMeter")
     @ExceptionMetered(name="downloadExceptionMeter")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response download(DownloadRequirementRequest downloadRequirementRequest) {
+    public Response download(DownloadRequirementRequest downloadRequirementRequest) throws IOException {
         log.info("Download Requirement request received " + downloadRequirementRequest);
-        //StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
+        StreamingOutput stream = requirementService.downloadRequirement(downloadRequirementRequest);
+        return Response.ok(stream)
+                .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename = projection.xlsx")
+                .build();
 
-        try {
-            StreamingOutput stream = CreateTemplate.create(null);
-            return Response.ok(stream)
-                    .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename = projection.xlsx")
-                    .build();
-        } catch (InvalidFormatException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
     @Timed(name="uploadTimer")
     @Metered(name="uploadMeter")

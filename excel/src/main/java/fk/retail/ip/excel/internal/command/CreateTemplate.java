@@ -1,60 +1,83 @@
 package fk.retail.ip.excel.internal.command;
 
 import fk.retail.ip.excel.internal.command.model.Column;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import javax.ws.rs.core.StreamingOutput;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by agarwal.vaibhav on 18/05/17.
  */
 
-public class CreateTemplate {
+public interface CreateTemplate {
 
-    private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HHmmss.S");
+    default SXSSFWorkbook create(List<Column> columnList) throws IOException {
+        SXSSFWorkbook wbss;
+        wbss = new SXSSFWorkbook(100);
+        Sheet spreadSheet = wbss.createSheet();
 
-    public static StreamingOutput create(List<Column> columnList) throws IOException, InvalidFormatException {
-        //Path tempFile = Files.createTempFile(null, format.format(new Date()));
-        try {
-            XSSFWorkbook workbook = new XSSFWorkbook();
-            XSSFSheet spreadSheet = workbook.createSheet("test");
-            XSSFRow row;
-            //Map<String, Object[]> excelValueMap = new HashMap();
-            //excelValueMap.put("1", new Object[]{"Requirement id", "name", "fsn", "qty", "app"});
-            List<String> columnHeaders = new ArrayList<>();
-            columnList.forEach(column -> {
-                columnHeaders.add(column.getName());
-            });
-            //List<String> columnHeaders = new ArrayList<>(Arrays.asList("Requirement id", "name", "fsn", "qty", "app"));
-            //Set<String> keyset = new HashSet<>(Arrays.asList("Requirement id", "name", "fsn", "qty", "app"));
-            //Set<String> keyset = excelValueMap.keySet();
-            int rowid = 0;
-            row = spreadSheet.createRow(rowid);
-            int cellid = 0;
-            for (String key : columnHeaders) {
-                Cell cell = row.createCell(cellid++);
-                cell.setCellValue(key);
-            }
-            //try {
-                //FileOutputStream fs = new FileOutputStream("abc.xlsx");
-                StreamingOutput streamingOutput = (OutputStream out1)  -> {
-                    workbook.write(out1);
-                };
-                //workbook.write(fs);
-                return streamingOutput;
+        Row row;
+        List<String> columnHeaders = new ArrayList<>();
+        columnList.forEach(column -> {
+            columnHeaders.add(column.getName());
+        });
 
-        } catch(Exception e) {
-
+        int rowid = 0;
+        row = spreadSheet.createRow(rowid);
+        int cellid = 0;
+        for (String key : columnHeaders) {
+            Cell cell = row.createCell(cellid++);
+            cell.setCellValue(key);
         }
-        return null;
+        //try {
+            //OutputStream outputStream;
+            //StreamingOutput streamingOutput = wbss.write(outputStream);
+            //FileOutputStream fs = new FileOutputStream("abc.xlsx");
+//            StreamingOutput streamingOutput = (OutputStream out1)  -> {
+//                wbss.write(out1);
+//                out1.flush();
+//            };
+//        flushOutputStream outputStream = (OutputStream out) -> {
+//          wbss.write(out);
+//        };
+
+//        OutputStream outputStream1 = new FileOutputStream("tempfile.xlsx");
+//        wbss.write(outputStream1);
+        //wbss.dispose();
+        //return outputStream1;
+        return wbss;
+
+        //ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //wbss.write(baos);
+        //outputStream.flush();
+
+//        StreamingOutput outputStream = (OutputStream out1) -> {
+//            wbss.write(out1);
+//        };
+
+
+        //return outputStream;
+
+
+
+//       StreamingOutput outputStream = (OutputStream out1) -> {
+//            wbss.write(out1);
+//            out1.flush();
+//       };
+//
+//            wbss.dispose();
+//            //workbook.write(fs);
+//            return outputStream;
+
+   // } catch(Exception e) {
+
+    //}
+    //return null;
 
     }
 }

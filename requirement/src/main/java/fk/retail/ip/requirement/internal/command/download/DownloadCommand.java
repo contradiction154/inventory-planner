@@ -7,8 +7,7 @@ import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.zulu.client.ZuluClient;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.ws.rs.core.StreamingOutput;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,23 +30,28 @@ public abstract class DownloadCommand extends RequirementDataAggregator {
         this.generateExcelCommand = generateExcelCommand;
     }
 
-    public StreamingOutput execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
+    public List<RequirementDownloadLineItem> execute(List<Requirement> requirements, boolean isLastAppSupplierRequired) {
         log.info("Download Request for {} number of requirements", requirements.size());
         if (requirements.isEmpty()) {
             log.info("No requirements found for download. Generating empty file");
-            return generateExcelCommand.generateExcel(Collections.EMPTY_LIST, getTemplateName(isLastAppSupplierRequired));
+            return new ArrayList<>();
         }
+
+//        Set<String> fsns = requirements.stream().map(Requirement::getFsn).collect(Collectors.toSet());
+        Set<String> requirementWhs = requirements.stream().map(Requirement::getWarehouse).collect(Collectors.toSet());
+
         List<RequirementDownloadLineItem> requirementDownloadLineItems = requirements.stream().map(RequirementDownloadLineItem::new).collect(toList());
+        requirements.clear();
         Map<String, List<RequirementDownloadLineItem>> fsnToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getFsn));
-        Map<String, List<RequirementDownloadLineItem>> WhToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getWarehouse));
+//        Map<String, List<RequirementDownloadLineItem>> WhToRequirement = requirementDownloadLineItems.stream().collect(Collectors.groupingBy(RequirementDownloadLineItem::getWarehouse));
         Set<String> fsns = fsnToRequirement.keySet();
-        Set<String> requirementWhs = WhToRequirement.keySet();
+//        Set<String> requirementWhs = WhToRequirement.keySet();
         fetchProductData(fsnToRequirement);
         fetchFsnBandData(fsnToRequirement);
         fetchSalesBucketData(fsns, requirementDownloadLineItems);
         fetchWarehouseName(requirementWhs, requirementDownloadLineItems);
         fetchRequirementStateData(isLastAppSupplierRequired, fsns, requirementDownloadLineItems);
-        return generateExcelCommand.generateExcel(requirementDownloadLineItems, getTemplateName(isLastAppSupplierRequired));
+        return requirementDownloadLineItems;
     }
 
     protected abstract String getTemplateName(boolean isLastAppSupplierRequired);

@@ -3,6 +3,7 @@ package fk.retail.ip.requirement.internal.command.upload;
 import com.google.common.collect.Lists;
 import fk.retail.ip.requirement.config.TestModule;
 import fk.retail.ip.requirement.internal.Constants;
+import fk.retail.ip.requirement.internal.RequirementExcel;
 import fk.retail.ip.requirement.internal.command.FdpRequirementIngestorImpl;
 import fk.retail.ip.requirement.internal.entities.Requirement;
 import fk.retail.ip.requirement.internal.entities.RequirementEventLog;
@@ -12,7 +13,6 @@ import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.RequirementApprovalState;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.TestHelper;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideFailureLineItem;
 import fk.retail.ip.ssl.model.SupplierSelectionResponse;
@@ -24,12 +24,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
-//import java.io.IOException;
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+//import java.io.IOException;
 
 /**
  * Created by agarwal.vaibhav on 02/03/17.
@@ -107,6 +111,16 @@ public class ProposedUploadCommandTest {
 
         Assert.assertEquals(2, argumentCaptor.getValue().size());
 
+    }
+
+    @Test
+    public void test() {
+        List<Map<String, Object>> testList = new ArrayList<>();
+        Map<String, Object> testmap = new HashMap<>();
+        testmap.put("Quantity", 1);
+        testList.add(testmap);
+        RequirementExcel requirementExcel = new RequirementExcel("proposed");
+        requirementExcel.validate(requirementExcel.getColumnList(), testList);
     }
 
 

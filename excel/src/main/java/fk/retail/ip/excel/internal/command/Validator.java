@@ -10,15 +10,17 @@ import java.util.Map;
  * Created by agarwal.vaibhav on 17/05/17.
  */
 public interface Validator {
-    default void validate(List<Column> columnList, List<Map<String, String>> rows) {
-        for (Map<String, String> row : rows) {
-            columnList.forEach(column -> {
-                List<Validation> validations = column.getPredicates();
+    default void validate(List<Column> columnList, List<Map<String, Object>> rows) {
+        columnList.forEach(column -> {
+            List<Validation> validations = column.getPredicates();
+            if (validations != null) {
                 validations.forEach(validation -> {
-                    validation.execute();
+                    rows.forEach(row -> {
+                        validation.execute(row.get(column.getName()));
+                    });
                 });
-            });
-        }
+            }
+        });
 
     }
 }
