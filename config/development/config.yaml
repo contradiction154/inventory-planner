@@ -119,3 +119,7 @@ connektConfiguration:
 emailConfiguration:
   host: localhost:55058
   path: "/projection/"
+
+groupSegmentationConfiguration:
+  url: http://10.85.110.102:32000/v1/group
+  queueName: retail_ip_group_segmentation
