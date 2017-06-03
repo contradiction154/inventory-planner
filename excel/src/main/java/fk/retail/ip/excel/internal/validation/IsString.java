@@ -1,14 +1,15 @@
-package fk.retail.ip.excel.internal.command.validation;
+package fk.retail.ip.excel.internal.validation;
 
 import java.util.function.Predicate;
 
 /**
- * Created by agarwal.vaibhav on 30/05/17.
+ * Created by agarwal.vaibhav on 17/05/17.
  */
-public class IsPositive<T> extends Validation<T> {
+public class IsString<T> extends Validation<T> {
+
     @Override
     public <T> boolean execute(T t) {
-        Predicate<T> positive = T -> (Double)t > 0;
+        Predicate<T> positive = T -> T instanceof String;
         if (positive.test(t)) {
             return true;
         } else {

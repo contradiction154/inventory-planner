@@ -9,15 +9,14 @@ import fk.retail.ip.requirement.internal.enums.OverrideKey;
 import fk.retail.ip.requirement.internal.enums.OverrideStatus;
 import fk.retail.ip.requirement.internal.repository.RequirementEventLogRepository;
 import fk.retail.ip.requirement.internal.repository.RequirementRepository;
-import fk.retail.ip.requirement.model.RequirementDownloadLineItem;
-import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import fk.retail.ip.requirement.model.RequirementUploadLineItem;
+import fk.retail.ip.ssl.model.SupplierSelectionResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.map.MultiKeyMap;
 import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Created by agarwal.vaibhav on 06/02/17.
@@ -46,15 +45,8 @@ public class ProposedUploadCommand extends UploadCommand {
 
         Map<String, Object> overriddenFields = new HashMap<>();
 
-        Optional<String> validationResponse = validateQuantityOverride(
-                currentQuantity, proposedQuantity, quantityOverrideComment);
-        if (validationResponse.isPresent()) {
-            String validationComment = validationResponse.get();
-            overriddenFields.put(Constants.STATUS, OverrideStatus.FAILURE.toString());
-            overriddenFields.put(OverrideKey.OVERRIDE_COMMENT.toString(), validationComment);
-        } else {
-            overriddenFields = getOverriddenFields(currentQuantity, proposedQuantity, quantityOverrideComment);
-        }
+        overriddenFields = getOverriddenFields(currentQuantity, proposedQuantity, quantityOverrideComment);
+
 
         return overriddenFields;
     }

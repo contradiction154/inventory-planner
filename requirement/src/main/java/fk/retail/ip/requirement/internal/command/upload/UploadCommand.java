@@ -53,7 +53,8 @@ public abstract class UploadCommand {
             List<RequirementUploadLineItem> requirementUploadLineItems,
             List<Requirement> requirements,
             String userId,
-            String state
+            String state,
+            Map<Integer, Map<String, List<String>>> errorMap
     ) {
 
         Map<String, String> fsnToVerticalMap = null;
@@ -80,17 +81,13 @@ public abstract class UploadCommand {
             String fsn = row.getFsn();
             String warehouse = row.getWarehouseName();
 
-            Optional<String> genericComment = validateGenericColumns(fsn, warehouse);
-
-            if (genericComment.isPresent()) {
-                uploadOverrideFailureLineItem.setFailureReason(genericComment.get());
-                uploadOverrideFailureLineItem.setFsn(fsn == null ? "" : fsn);
-                uploadOverrideFailureLineItem.setWarehouse(warehouse == null ? "" : warehouse);
+            if (errorMap.containsKey(rowCount)) {
+                String failureReason = "dummy reason";
+                uploadOverrideFailureLineItem.setFsn(fsn);
+                uploadOverrideFailureLineItem.setWarehouse(warehouse);
+                uploadOverrideFailureLineItem.setFailureReason(failureReason);
                 uploadOverrideFailureLineItem.setRowNumber(rowCount);
-                uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
-
             } else {
-
                 String requirementId = row.getRequirementId();
                 if (requirementMap.containsKey(requirementId)) {
                     Requirement requirement = requirementMap.get(requirementId);
@@ -110,85 +107,85 @@ public abstract class UploadCommand {
                             break;
 
                         case UPDATE:
-                                //Add IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request
-                                log.info("Adding IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, " +
-                                        "CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request");
-                                RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
-                                List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
+                            //Add IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request
+                            log.info("Adding IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, " +
+                                    "CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request");
+                            RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+                            List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
 
-                                if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
-                                    String eventType = null;
-                                    String overrideReason = null;
-                                    if (RequirementApprovalState.PROPOSED.toString().equals(requirement.getState())) {
-                                        eventType = FdpRequirementEventType.IPC_QUANTITY_OVERRIDE.toString();
-                                        overrideReason = row.getIpcQuantityOverrideReason();
-                                    } else if (RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState())) {
-                                        eventType = FdpRequirementEventType.CDO_QUANTITY_OVERRIDE.toString();
-                                        overrideReason = row.getCdoQuantityOverrideReason();
-                                    } else if (RequirementApprovalState.BIZFIN_REVIEW.toString().equals(requirement.getState())) {
-                                        eventType = FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString();
-                                        overrideReason = row.getBizFinComment();
-                                    }
-                                    if (eventType != null)
-                                        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap
-                                                (OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()),
-                                                        overriddenValues.get(OverrideKey.QUANTITY.toString()).toString(),
-                                                        eventType, overrideReason, userId));
-
-                                    requirement.setQuantity
-                                            ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
+                            if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
+                                String eventType = null;
+                                String overrideReason = null;
+                                if (RequirementApprovalState.PROPOSED.toString().equals(requirement.getState())) {
+                                    eventType = FdpRequirementEventType.IPC_QUANTITY_OVERRIDE.toString();
+                                    overrideReason = row.getIpcQuantityOverrideReason();
+                                } else if (RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState())) {
+                                    eventType = FdpRequirementEventType.CDO_QUANTITY_OVERRIDE.toString();
+                                    overrideReason = row.getCdoQuantityOverrideReason();
+                                } else if (RequirementApprovalState.BIZFIN_REVIEW.toString().equals(requirement.getState())) {
+                                    eventType = FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString();
+                                    overrideReason = row.getBizFinComment();
                                 }
+                                if (eventType != null)
+                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap
+                                            (OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()),
+                                                    overriddenValues.get(OverrideKey.QUANTITY.toString()).toString(),
+                                                    eventType, overrideReason, userId));
 
-                                if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
-                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SLA.toString(),
-                                            String.valueOf(requirement.getSla()), overriddenValues.get(OverrideKey.SLA.toString()).toString(),
-                                            FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "Sla overridden by CDO", userId));
-                                    requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
-                                }
+                                requirement.setQuantity
+                                        ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
+                            }
 
-                                if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
-                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(),
-                                            String.valueOf(requirement.getApp()), overriddenValues.get(OverrideKey.APP.toString()).toString(),
-                                            FdpRequirementEventType.CDO_APP_OVERRIDE.toString(), row.getCdoPriceOverrideReason(), userId));
-                                    requirement.setApp((Double) overriddenValues.get(OverrideKey.APP.toString()));
-                                }
+                            if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
+                                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SLA.toString(),
+                                        String.valueOf(requirement.getSla()), overriddenValues.get(OverrideKey.SLA.toString()).toString(),
+                                        FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "Sla overridden by CDO", userId));
+                                requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
+                            }
 
-                                if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
-                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(),
-                                            String.valueOf(requirement.getSupplier()), row.getCdoSupplierOverride(),
-                                            FdpRequirementEventType.CDO_SUPPLIER_OVERRIDE.toString(),
-                                            row.getCdoSupplierOverrideReason(), userId));
-                                    requirement.setSupplier(row.getCdoSupplierOverride());
-                                    SupplierView supplierView = (SupplierView) overriddenValues.get(OverrideKey.SUPPLIER.toString());
-                                    requirement.setMrp(supplierView.getMrp());
-                                }
+                            if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
+                                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(),
+                                        String.valueOf(requirement.getApp()), overriddenValues.get(OverrideKey.APP.toString()).toString(),
+                                        FdpRequirementEventType.CDO_APP_OVERRIDE.toString(), row.getCdoPriceOverrideReason(), userId));
+                                requirement.setApp((Double) overriddenValues.get(OverrideKey.APP.toString()));
+                            }
 
-                                if (overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString())) {
-                                    requirement.setOverrideComment
-                                            (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
-                                }
+                            if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
+                                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(),
+                                        String.valueOf(requirement.getSupplier()), row.getCdoSupplierOverride(),
+                                        FdpRequirementEventType.CDO_SUPPLIER_OVERRIDE.toString(),
+                                        row.getCdoSupplierOverrideReason(), userId));
+                                requirement.setSupplier(row.getCdoSupplierOverride());
+                                SupplierView supplierView = (SupplierView) overriddenValues.get(OverrideKey.SUPPLIER.toString());
+                                requirement.setMrp(supplierView.getMrp());
+                            }
 
-                                if (!overriddenValues.containsKey(OverrideKey.QUANTITY.toString()) &&
-                                        overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString()) &&
-                                        requirement.getState().equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
-                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(
-                                            OverrideKey.OVERRIDE_COMMENT.toString(),
-                                            null,
-                                            row.getBizFinComment(),
-                                            FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString(),
-                                            FdpRequirementEventType.BIZFIN_COMMENT_RECOMMENDATION.toString(),
-                                            userId
-                                    ));
-                                }
+                            if (overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString())) {
+                                requirement.setOverrideComment
+                                        (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
+                            }
 
-                                if (!requirementChangeMaps.isEmpty()) {
-                                    requirementChangeRequest.setRequirement(requirement);
-                                    requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
-                                    requirementChangeRequestList.add(requirementChangeRequest);
-                                }
+                            if (!overriddenValues.containsKey(OverrideKey.QUANTITY.toString()) &&
+                                    overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString()) &&
+                                    requirement.getState().equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
+                                requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(
+                                        OverrideKey.OVERRIDE_COMMENT.toString(),
+                                        null,
+                                        row.getBizFinComment(),
+                                        FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString(),
+                                        FdpRequirementEventType.BIZFIN_COMMENT_RECOMMENDATION.toString(),
+                                        userId
+                                ));
+                            }
 
-                                requirement.setUpdatedBy(userId);
-                                successfulRowCount += 1;
+                            if (!requirementChangeMaps.isEmpty()) {
+                                requirementChangeRequest.setRequirement(requirement);
+                                requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+                                requirementChangeRequestList.add(requirementChangeRequest);
+                            }
+
+                            requirement.setUpdatedBy(userId);
+                            successfulRowCount += 1;
 
                             break;
 
@@ -205,8 +202,135 @@ public abstract class UploadCommand {
                     uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
                 }
 
-                }
             }
+
+//            Optional<String> genericComment = validateGenericColumns(fsn, warehouse);
+//
+//            if (genericComment.isPresent()) {
+//                uploadOverrideFailureLineItem.setFailureReason(genericComment.get());
+//                uploadOverrideFailureLineItem.setFsn(fsn == null ? "" : fsn);
+//                uploadOverrideFailureLineItem.setWarehouse(warehouse == null ? "" : warehouse);
+//                uploadOverrideFailureLineItem.setRowNumber(rowCount);
+//                uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
+//
+//            } else {
+
+//                String requirementId = row.getRequirementId();
+//                if (requirementMap.containsKey(requirementId)) {
+//                    Requirement requirement = requirementMap.get(requirementId);
+//                    Map<String, Object> overriddenValues = validateAndSetStateSpecificFields(row, requirement,
+//                            fsnToVerticalMap, fsnWhSupplierMap);
+//                    String status = overriddenValues.get(Constants.STATUS).toString();
+//                    OverrideStatus overrideStatus = OverrideStatus.fromString(status);
+//
+//                    switch (overrideStatus) {
+//                        case FAILURE:
+//                            uploadOverrideFailureLineItem.setFailureReason(overriddenValues.get
+//                                    (OverrideKey.OVERRIDE_COMMENT.toString()).toString());
+//                            uploadOverrideFailureLineItem.setFsn(fsn);
+//                            uploadOverrideFailureLineItem.setRowNumber(rowCount);
+//                            uploadOverrideFailureLineItem.setWarehouse(warehouse);
+//                            uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
+//                            break;
+//
+//                        case UPDATE:
+//                                //Add IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request
+//                                log.info("Adding IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, " +
+//                                        "CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp request");
+//                                RequirementChangeRequest requirementChangeRequest = new RequirementChangeRequest();
+//                                List<RequirementChangeMap> requirementChangeMaps = Lists.newArrayList();
+//
+//                                if (overriddenValues.containsKey(OverrideKey.QUANTITY.toString())) {
+//                                    String eventType = null;
+//                                    String overrideReason = null;
+//                                    if (RequirementApprovalState.PROPOSED.toString().equals(requirement.getState())) {
+//                                        eventType = FdpRequirementEventType.IPC_QUANTITY_OVERRIDE.toString();
+//                                        overrideReason = row.getIpcQuantityOverrideReason();
+//                                    } else if (RequirementApprovalState.CDO_REVIEW.toString().equals(requirement.getState())) {
+//                                        eventType = FdpRequirementEventType.CDO_QUANTITY_OVERRIDE.toString();
+//                                        overrideReason = row.getCdoQuantityOverrideReason();
+//                                    } else if (RequirementApprovalState.BIZFIN_REVIEW.toString().equals(requirement.getState())) {
+//                                        eventType = FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString();
+//                                        overrideReason = row.getBizFinComment();
+//                                    }
+//                                    if (eventType != null)
+//                                        requirementChangeMaps.add(PayloadCreationHelper.createChangeMap
+//                                                (OverrideKey.QUANTITY.toString(), String.valueOf(requirement.getQuantity()),
+//                                                        overriddenValues.get(OverrideKey.QUANTITY.toString()).toString(),
+//                                                        eventType, overrideReason, userId));
+//
+//                                    requirement.setQuantity
+//                                            ((Integer) overriddenValues.get(OverrideKey.QUANTITY.toString()));
+//                                }
+//
+//                                if (overriddenValues.containsKey(OverrideKey.SLA.toString())) {
+//                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SLA.toString(),
+//                                            String.valueOf(requirement.getSla()), overriddenValues.get(OverrideKey.SLA.toString()).toString(),
+//                                            FdpRequirementEventType.CDO_SLA_OVERRIDE.toString(), "Sla overridden by CDO", userId));
+//                                    requirement.setSla((Integer) overriddenValues.get(OverrideKey.SLA.toString()));
+//                                }
+//
+//                                if (overriddenValues.containsKey(OverrideKey.APP.toString())) {
+//                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.APP.toString(),
+//                                            String.valueOf(requirement.getApp()), overriddenValues.get(OverrideKey.APP.toString()).toString(),
+//                                            FdpRequirementEventType.CDO_APP_OVERRIDE.toString(), row.getCdoPriceOverrideReason(), userId));
+//                                    requirement.setApp((Double) overriddenValues.get(OverrideKey.APP.toString()));
+//                                }
+//
+//                                if (overriddenValues.containsKey(OverrideKey.SUPPLIER.toString())) {
+//                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(OverrideKey.SUPPLIER.toString(),
+//                                            String.valueOf(requirement.getSupplier()), row.getCdoSupplierOverride(),
+//                                            FdpRequirementEventType.CDO_SUPPLIER_OVERRIDE.toString(),
+//                                            row.getCdoSupplierOverrideReason(), userId));
+//                                    requirement.setSupplier(row.getCdoSupplierOverride());
+//                                    SupplierView supplierView = (SupplierView) overriddenValues.get(OverrideKey.SUPPLIER.toString());
+//                                    requirement.setMrp(supplierView.getMrp());
+//                                }
+//
+//                                if (overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString())) {
+//                                    requirement.setOverrideComment
+//                                            (overriddenValues.get(OverrideKey.OVERRIDE_COMMENT.toString()).toString());
+//                                }
+//
+//                                if (!overriddenValues.containsKey(OverrideKey.QUANTITY.toString()) &&
+//                                        overriddenValues.containsKey(OverrideKey.OVERRIDE_COMMENT.toString()) &&
+//                                        requirement.getState().equals(RequirementApprovalState.BIZFIN_REVIEW.toString())) {
+//                                    requirementChangeMaps.add(PayloadCreationHelper.createChangeMap(
+//                                            OverrideKey.OVERRIDE_COMMENT.toString(),
+//                                            null,
+//                                            row.getBizFinComment(),
+//                                            FdpRequirementEventType.BIZFIN_QUANTITY_RECOMMENDATION.toString(),
+//                                            FdpRequirementEventType.BIZFIN_COMMENT_RECOMMENDATION.toString(),
+//                                            userId
+//                                    ));
+//                                }
+//
+//                                if (!requirementChangeMaps.isEmpty()) {
+//                                    requirementChangeRequest.setRequirement(requirement);
+//                                    requirementChangeRequest.setRequirementChangeMaps(requirementChangeMaps);
+//                                    requirementChangeRequestList.add(requirementChangeRequest);
+//                                }
+//
+//                                requirement.setUpdatedBy(userId);
+//                                successfulRowCount += 1;
+//
+//                            break;
+//
+//                        case SUCCESS:
+//                            break;
+//
+//                    }
+//                }   else {
+//                    uploadOverrideFailureLineItem.setFailureReason
+//                            (Constants.REQUIREMENT_NOT_FOUND_FOR_GIVEN_REQUIREMENT_ID);
+//                    uploadOverrideFailureLineItem.setFsn(fsn);
+//                    uploadOverrideFailureLineItem.setRowNumber(rowCount);
+//                    uploadOverrideFailureLineItem.setWarehouse(warehouse);
+//                    uploadOverrideFailureLineItems.add(uploadOverrideFailureLineItem);
+//                }
+
+                }
+//            }
 
         //Push IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp
         log.debug("Pushing IPC_QUANTITY_OVERRIDE, CDO_QUANTITY_OVERRIDE, CDO_APP_OVERRIDE, CDO_SLA_OVERRIDE, CDO_SUPPLIER_OVERRIDE events to fdp");

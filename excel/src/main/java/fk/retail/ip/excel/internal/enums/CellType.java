@@ -1,4 +1,4 @@
-package fk.retail.ip.excel.internal.command.enums;
+package fk.retail.ip.excel.internal.enums;
 
 /**
  * Created by agarwal.vaibhav on 23/05/17.

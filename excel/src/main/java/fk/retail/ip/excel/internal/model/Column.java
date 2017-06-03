@@ -1,7 +1,7 @@
-package fk.retail.ip.excel.internal.command.model;
+package fk.retail.ip.excel.internal.model;
 
-import fk.retail.ip.excel.internal.command.enums.CellType;
-import fk.retail.ip.excel.internal.command.validation.Validation;
+import fk.retail.ip.excel.internal.enums.CellType;
+import fk.retail.ip.excel.internal.validation.Validation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

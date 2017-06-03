@@ -10,6 +10,7 @@ import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nidhigupta.m on 21/02/17.
@@ -28,8 +29,8 @@ public class ProposedRequirementState implements RequirementState {
     @Override
     public UploadOverrideResult upload(List<Requirement> requirements,
                                        List<RequirementUploadLineItem> parsedJson,
-                                       String userId, String state) {
-        return uploadProposedCommandProvider.get().execute(parsedJson, requirements, userId, state);
+                                       String userId, String state, Map<Integer, Map<String, List<String>>> map) {
+        return uploadProposedCommandProvider.get().execute(parsedJson, requirements, userId, state, map);
     }
 
     @Override

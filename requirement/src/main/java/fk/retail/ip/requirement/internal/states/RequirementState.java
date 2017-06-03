@@ -6,6 +6,7 @@ import fk.retail.ip.requirement.model.RequirementUploadLineItem;
 import fk.retail.ip.requirement.model.UploadOverrideResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by nidhigupta.m on 21/02/17.
@@ -13,5 +14,5 @@ import java.util.List;
 
 public interface RequirementState {
     List<RequirementDownloadLineItem> download(List<Requirement> requirements, boolean isLastAppSupplierRequired);
-    UploadOverrideResult upload(List<Requirement> requirements, List<RequirementUploadLineItem> requirementUploadLineItems, String userID, String state);
+    UploadOverrideResult upload(List<Requirement> requirements, List<RequirementUploadLineItem> requirementUploadLineItems, String userID, String state, Map<Integer, Map<String, List<String>>> errorMap);
 }

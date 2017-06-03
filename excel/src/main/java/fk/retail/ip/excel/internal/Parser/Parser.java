@@ -1,4 +1,4 @@
-package fk.retail.ip.excel.internal.command.Parser;
+package fk.retail.ip.excel.internal.Parser;
 
 import java.io.InputStream;
 import java.util.List;

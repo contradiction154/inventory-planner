@@ -1,7 +1,7 @@
-package fk.retail.ip.excel.internal.command.Excel;
+package fk.retail.ip.excel.internal.Excel;
 
 import fk.retail.ip.excel.internal.command.CreateTemplate;
-import fk.retail.ip.excel.internal.command.Parser.Parser;
+import fk.retail.ip.excel.internal.Parser.Parser;
 import fk.retail.ip.excel.internal.command.Validator;
 
 /**

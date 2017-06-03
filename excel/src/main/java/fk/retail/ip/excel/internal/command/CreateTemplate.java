@@ -1,6 +1,6 @@
 package fk.retail.ip.excel.internal.command;
 
-import fk.retail.ip.excel.internal.command.model.Column;
+import fk.retail.ip.excel.internal.model.Column;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

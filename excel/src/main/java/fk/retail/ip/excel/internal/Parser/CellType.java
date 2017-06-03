@@ -1,4 +1,4 @@
-package fk.retail.ip.excel.internal.command.Parser;
+package fk.retail.ip.excel.internal.Parser;
 
 /**
  * Created by agarwal.vaibhav on 18/05/17.
