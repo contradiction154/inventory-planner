@@ -206,6 +206,11 @@ public class JPARequirementRepository extends SimpleJpaGenericRepository<Require
         return query.getResultList();
     }
 
+    /*This returns the creation date for the requirements (in proposed state) for a group
+    * assuming that all the requirements are created/planned for the same day
+    * across a planning group
+    * */
+
     @Override
     public Date getProjectionCreationDate(String groupName) {
         TypedQuery<Date> query = getEntityManager().createNamedQuery("findRequirementCreationDateByGroups", Date.class);

@@ -13,8 +13,7 @@ import javax.persistence.*;
 public class GroupEmailIds {
 
     @Id
-    @Access(AccessType.PROPERTY)
     protected Long id;
-    String group;
-    String emailId;
+    private String group;
+    private String emailId;
 }

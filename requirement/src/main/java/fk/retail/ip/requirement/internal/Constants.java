@@ -66,5 +66,8 @@ public interface Constants {
     String APPROVAL_CHANNEL_INFO_TYPE = "EMAIL";
     String APPROVAL_CONTEXT_ID = "fk-inventory-planner";
 
+    String STENCIL_CONFIG_FILE = "/stencil-configurations.json";
+    String USER_GROUPS_CONFIG_FILE = "/ApprovalStatesEmailingListConfigurations.json";
+
 }
 

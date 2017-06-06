@@ -34,13 +34,13 @@ public class ApprovalEmailHelper extends SendEmail {
     public ApprovalEmailHelper(ConnektClient connektClient, EmailDetailsRepository emailDetailsRepository) {
         super(emailDetailsRepository, connektClient);
         try {
-            String stencilConfigFile = "/stencil-configurations.json";
+            String stencilConfigFile = Constants.STENCIL_CONFIG_FILE;
             InputStreamReader inputStreamReader = new InputStreamReader(getClass().getResourceAsStream(stencilConfigFile));
             ObjectMapper objectMapper = new ObjectMapper();
             stencilConfigModel = objectMapper.readValue(inputStreamReader, StencilConfigModel.class);
             inputStreamReader.close();
 
-            String userGroupConfigFile = "/ApprovalStatesEmailingListConfigurations.json";
+            String userGroupConfigFile = Constants.USER_GROUPS_CONFIG_FILE;
             inputStreamReader = new InputStreamReader(getClass().getResourceAsStream(userGroupConfigFile));
             userGroups = objectMapper.readValue(inputStreamReader, UserGroups.class);
             inputStreamReader.close();
@@ -193,13 +193,10 @@ public class ApprovalEmailHelper extends SendEmail {
         ccList.removeAll(toList);
     }
 
+    /*Checks if a usergroup is present for given state and actionFlow value*/
     private boolean isUserGroupPresent(UserGroups userGroups, String actionDirection, String state) {
         try {
-            if (userGroups.getStateUserGroups().get(state).get(actionDirection) != null) {
-                return true;
-            } else {
-                return false;
-            }
+            return (userGroups.getStateUserGroups().get(state).get(actionDirection) != null);
         } catch (NullPointerException ex) {
             return false;
         }
